@@ -66,11 +66,15 @@ namespace itis {
         Element removed_elem;
         if (index == 0) {
             removed_elem = head_->data;
+            auto node = head_;
             head_ = head_->next;
+            delete node;
         } else {
             auto node = find_node(index - 1);
+            auto node_delete = node->next;
             removed_elem = node->next->data;
             node->next = node->next->next;
+            delete node_delete;
         }
         size_--;
         return removed_elem;
