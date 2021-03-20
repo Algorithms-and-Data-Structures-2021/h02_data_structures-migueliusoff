@@ -29,23 +29,25 @@ namespace itis {
         // Tip 1: вставка элементов на позицию size эквивалентно операции добавления в конец
         // Tip 2: рассмотрите несколько случаев:
         //        (1) список пустой,
-        if (size_ == 0 || index == size_){
+        //        (3) добавляем в конец списка
+
+        if (size_ == 0 || index == size_) {
             LinkedList::Add(e);
+            return;
         }
         //        (2) добавляем в начало списка,
         auto node = new Node(e, nullptr);
-        if (index == 0){
+        if (index == 0) {
             node->next = head_;
             head_ = node;
         }
-        //        (3) добавляем в конец списка
-        //        (4) все остальное
+            //        (4) все остальное
         else {
-            auto insert_node = LinkedList::find_node(index);
+            auto insert_node = LinkedList::find_node(index - 1);
             node->next = insert_node->next;
             insert_node->next = node;
         }
-
+        size_++;
         // напишите свой код здесь ...
     }
 
@@ -53,6 +55,7 @@ namespace itis {
         internal::check_out_of_range(index, 0, size_);
         // Tip 1: используйте функцию find_node(index)
         // напишите свой код здесь ...
+        find_node(index)->data = e;
     }
 
     Element LinkedList::Remove(int index) {
@@ -60,23 +63,49 @@ namespace itis {
         // Tip 1: рассмотрите случай, когда удаляется элемент в начале списка
         // Tip 2: используйте функцию find_node(index)
         // напишите свой код здесь ...
-        return {};
+        Element removed_elem;
+        if (index == 0) {
+            removed_elem = head_->data;
+            head_ = head_->next;
+        } else {
+            auto node = find_node(index - 1);
+            removed_elem = node->next->data;
+            node->next = node->next->next;
+        }
+        size_--;
+        return removed_elem;
     }
 
     void LinkedList::Clear() {
         // Tip 1: люди в черном (MIB) пришли стереть вам память
         // напишите свой код здесь ...
+        auto node = head_;
+        for (int i = 0; i < size_; i++){
+            auto node_node = node->next;
+            delete node;
+            node = node_node;
+        }
+        head_ = nullptr;
+        tail_ = nullptr;
+        size_ = 0;
     }
 
     Element LinkedList::Get(int index) const {
         internal::check_out_of_range(index, 0, size_);
         // напишите свой код здесь ...
-        return {};
+        return find_node(index)->data;
     }
 
     int LinkedList::IndexOf(Element e) const {
         // напишите свой код здесь ...
-        return {};
+        auto node = head_;
+        for (int i = 0; i < size_; i++){
+            if (node->data == e){
+                return i;
+            }
+            node = node->next;
+        }
+        return -1;
     }
 
     Node *LinkedList::find_node(int index) const {
@@ -84,7 +113,7 @@ namespace itis {
         // Tip 1: можете сразу обработать случаи поиска начала и конца списка
         // напишите свой код здесь ...
         int counter = 0;
-        for (auto current_node = head_; current_node != nullptr; current_node = current_node->next){
+        for (auto current_node = head_; current_node != nullptr; current_node = current_node->next) {
             if (counter == index) return current_node;
             counter++;
         }
